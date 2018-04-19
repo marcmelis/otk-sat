@@ -100,9 +100,6 @@ ENV/
 # mypy
 .mypy_cache/
 
-# benchmarks
-bench
-bench*
+# Benchmarks
 
 # Scripts
-order_*
