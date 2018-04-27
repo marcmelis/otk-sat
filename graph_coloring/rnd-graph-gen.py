@@ -123,5 +123,10 @@ if __name__ == '__main__' :
     random.seed(seed)
     # Create a CNF instance
     cnf_formula = CNF(num_nodes, edge_prob, num_colors)
-    # Show formula
-    cnf_formula.show()
+    # WIP
+
+
+    # Resolve formula using our solver
+
+    # Parse the results and paint the nodes
+    # a_graph.get_node(<num_node>).attr['fillcolor'] = '<color_hex_code>'
