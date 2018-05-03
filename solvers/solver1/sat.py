@@ -23,9 +23,11 @@ def parse(filename):
         clauses.append(clause)
     return clauses, int(n_vars)
 
+
 def random_variable_selection(formula):
     counter = get_counter(formula)
     return random.choice(counter.keys())
+
 
 def get_counter(formula):
     counter = {}
@@ -36,6 +38,7 @@ def get_counter(formula):
             else:
                 counter[literal] = 0
     return counter
+
 
 def check_solution(solution, formula):
     for clause in formula:
@@ -53,29 +56,40 @@ def check_solution(solution, formula):
             return False
     return True
 
-def gsat(formula, assignment):
+
+"""def gsat(formula, assignment, n_vars):
     max_flips = 10
-    max_tries = 10000
+    max_tries = 1
     for tries in range(1, max_tries):
-        A = inital_configuration(formula)
+        A = initial_configuration(n_vars)
         for flips in range(1, max_flips):
             if A satisfies formula:
                 return A
             # Selecció de variable
             x = select-variable(A)
             A = A with x flipped
-    return solution
+    return solution"""
+
+
+def initial_configuration(n_vars):
+    init_conf = list()
+    for i in range(1, n_vars + 1):
+        init_conf.append(i)
+    return init_conf
+
 
 def main():
     formula, n_vars = parse(sys.argv[1])
-
-    solution = gsat(formula, [])
+    A = initial_configuration(n_vars)
+    print A
+    """solution = gsat(formula, [], n_vars)
     print solution
     if check_solution(solution, formula):
         print 's SATISFIABLE'
         print 'v ' + ' '.join([str(x) for x in solution]) + ' 0'
     else:
         print 's UNSATISFIABLE'
+"""
 
 
 if __name__ == '__main__':
