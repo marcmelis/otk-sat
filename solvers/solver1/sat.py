@@ -83,11 +83,8 @@ def initial_configuration(n_vars):
 def main():
     formula, n_vars = parse(sys.argv[1])
     solution = gsat(formula, n_vars)
-    if check_solution(solution, formula):
-        print 's SATISFIABLE'
-        print 'v ' + ' '.join([str(x) for x in solution]) + ' 0'
-    else:
-        print 's UNSATISFIABLE'
+    print 's SATISFIABLE'
+    print 'v ' + ' '.join([str(x) for x in solution]) + ' 0'
 
 
 if __name__ == '__main__':
