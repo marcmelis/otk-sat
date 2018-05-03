@@ -23,11 +23,9 @@ def parse(filename):
         clauses.append(clause)
     return clauses, int(n_vars)
 
-
 def random_variable_selection(formula):
     counter = get_counter(formula)
     return random.choice(counter.keys())
-
 
 def get_counter(formula):
     counter = {}
@@ -38,48 +36,6 @@ def get_counter(formula):
             else:
                 counter[literal] = 0
     return counter
-
-
-"""
-def sat(formula, max_flips, max_tries):
-    for tries in range(1, max_tries):
-        A = inital_configuration(formula)
-        for flips in range(1, max_flips):
-            if A satisfies formula:
-                return A
-            # Selecció de variable
-            x = select-variable(A)
-            A = A with x flipped
-    return 'No solution'
-"""
-
-
-def bcp(formula, unit):
-    modified = []
-    for clause in formula:
-        if unit in clause:
-            continue
-        if -unit in clause:
-            c = [x for x in clause if x != -unit]
-            if len(c) == 0:
-                return -1
-            modified.append(c)
-        else:
-            modified.append(clause)
-    return modified
-
-
-def backtracking(formula, assignment):
-    if formula == - 1:
-        return []
-    if not formula:
-        return assignment
-    variable = random_variable_selection(formula)
-    solution = backtracking(bcp(formula, variable), assignment + [variable])
-    if not solution:
-        solution = backtracking(bcp(formula, -variable), assignment + [-variable])
-    return solution
-
 
 def check_solution(solution, formula):
     for clause in formula:
@@ -97,11 +53,23 @@ def check_solution(solution, formula):
             return False
     return True
 
+def gsat(formula, assignment):
+    max_flips = 10
+    max_tries = 10000
+    for tries in range(1, max_tries):
+        A = inital_configuration(formula)
+        for flips in range(1, max_flips):
+            if A satisfies formula:
+                return A
+            # Selecció de variable
+            x = select-variable(A)
+            A = A with x flipped
+    return solution
 
 def main():
     formula, n_vars = parse(sys.argv[1])
-    # solution = [0, 1, -2, 3, 4]
-    solution = backtracking(formula, [])
+
+    solution = gsat(formula, [])
     print solution
     if check_solution(solution, formula):
         print 's SATISFIABLE'
