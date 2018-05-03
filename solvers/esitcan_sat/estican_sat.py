@@ -2,19 +2,28 @@ import sys
 import random
 
 class Formula(object):
-    def __init__(self, n_vars):
+    def __init__(self, n_vars, max_flips=40):
 
         # [clause, clause,..]
         self.simple = []
         # [ [], [clause,clause,.], [clause,clause,..], ..]
         self.linked = [ [] for _ in xrange(n_vars * 2 + 1) ]
         self.n_vars = n_vars
-        self.interpretation = [ 0 for _ in xrange(n_vars + 1)]
+        self.interpretation = range(n_vars + 1)
+        self.max_flips = max_flips
 
     def add_clause(self, clause):
         self.simple.append(clause)
         for literal in clause:
             self.linked[literal].append(clause)
+
+    def new_random_interpretation(self):
+        for i in xrange(1, self.n_vars + 1):
+            if random.random() < 0.5:
+                self.interpretation[i] *= -1
+
+    def is_satisfiable(self):
+        pass
 
     @staticmethod
     def parse(filename):
@@ -30,7 +39,10 @@ class Formula(object):
 
 def run_sat(formula):
     while(1): # max_tries = infinite
-        pass
+        formula.new_random_interpretation()
+        for _ in formula.max_flips:
+            if formula.is_satisfiable():
+                pass
 
 def main():
 
