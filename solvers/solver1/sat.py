@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding=utf-8
 
 """
     SAT solver Local Search
@@ -7,6 +8,7 @@
 """
 
 import sys
+import random
 
 
 def parse(filename):
@@ -15,18 +17,93 @@ def parse(filename):
         if line.startswith('c'):
             continue
         if line.startswith('p'):
-            nvars, nclauses = line.split()[2:4]
+            n_vars, n_clauses = line.split()[2:4]
             continue
         clause = [int(x) for x in line[:-2].split()]
         clauses.append(clause)
-    return clauses, int(nvars)
+    return clauses, int(n_vars)
+
+
+def random_variable_selection(formula):
+    counter = get_counter(formula)
+    return random.choice(counter.keys())
+
+
+def get_counter(formula):
+    counter = {}
+    for clause in formula:
+        for literal in clause:
+            if literal in counter:
+                counter[literal] += 1
+            else:
+                counter[literal] = 0
+    return counter
+
+
+"""
+def sat(formula, max_flips, max_tries):
+    for tries in range(1, max_tries):
+        A = inital_configuration(formula)
+        for flips in range(1, max_flips):
+            if A satisfies formula:
+                return A
+            # Selecció de variable
+            x = select-variable(A)
+            A = A with x flipped
+    return 'No solution'
+"""
+
+
+def bcp(formula, unit):
+    modified = []
+    for clause in formula:
+        if unit in clause:
+            continue
+        if -unit in clause:
+            c = [x for x in clause if x != -unit]
+            if len(c) == 0:
+                return -1
+            modified.append(c)
+        else:
+            modified.append(clause)
+    return modified
+
+
+def backtracking(formula, assignment):
+    if formula == - 1:
+        return []
+    if not formula:
+        return assignment
+    variable = random_variable_selection(formula)
+    solution = backtracking(bcp(formula, variable), assignment + [variable])
+    if not solution:
+        solution = backtracking(bcp(formula, -variable), assignment + [-variable])
+    return solution
+
+
+def check_solution(solution, formula):
+    for clause in formula:
+        solution = map(int, solution)
+        sl = map(int, clause)
+        length = len(sl)
+        for lit in sl:
+            print solution
+            print lit, solution[abs(lit) - 1]
+            if lit == solution[abs(lit) - 1]:
+                break
+            else:
+                length -= 1
+        if length == 0:
+            return False
+    return True
 
 
 def main():
-    clauses, nvars = parse(sys.argv[1])
-    print clauses
-    solution = [1]
-    if solution:
+    formula, n_vars = parse(sys.argv[1])
+    # solution = [0, 1, -2, 3, 4]
+    solution = backtracking(formula, [])
+    print solution
+    if check_solution(solution, formula):
         print 's SATISFIABLE'
         print 'v ' + ' '.join([str(x) for x in solution]) + ' 0'
     else:
