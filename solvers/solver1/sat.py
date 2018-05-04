@@ -9,6 +9,7 @@
 
 import sys
 import random
+from copy import deepcopy
 
 
 def parse(filename):
@@ -21,11 +22,30 @@ def parse(filename):
             continue
         clause = [int(x) for x in line[:-2].split()]
         clauses.append(clause)
-    return clauses, int(n_vars)
+    return clauses, int(n_vars), int(n_clauses)
 
 
 def random_variable_selection(n_vars):
     return random.randint(0, n_vars - 1)
+
+
+def max_sat_clauses(formula, assignment, max_satisfied):
+    max_sat = max_satisfied
+    li = random.randint(0, len(assignment) - 1)  # Random Walk
+    for i in range(0, len(assignment)):
+        sat = 0
+        choice = deepcopy(assignment)
+        index = abs(choice[i]) - 1
+        choice[index] = -choice[index]
+        for clause in formula:
+            for lit in clause:
+                if lit in choice:
+                    sat = sat + 1
+                    break
+        if sat > max_satisfied:
+            li = i
+            max_sat = sat
+    return max_sat, li
 
 
 def get_counter(formula):
@@ -55,18 +75,17 @@ def check_solution(solution, formula):
 
 
 def gsat(formula, n_vars):
-    max_flips = 100000
-    max_tries = 100
+    max_flips = n_vars * n_vars
+    max_tries = 10
     while True:
         assignment = initial_configuration(n_vars)
+        max_sat = 0
         for tries in range(1, max_tries):
             for flips in range(1, max_flips):
                 if check_solution(assignment, formula):
                     return assignment
-                x = random_variable_selection(n_vars)
-                # print "Variable selected: ", x + 1, " - Solution: ", assignment
+                max_sat, x = max_sat_clauses(formula, assignment, max_sat)
                 assignment[x] = -assignment[x]
-                # print "Solution Flipped: ", assignment
 
 
 def initial_configuration(n_vars):
@@ -81,7 +100,7 @@ def initial_configuration(n_vars):
 
 
 def main():
-    formula, n_vars = parse(sys.argv[1])
+    formula, n_vars, n_clauses = parse(sys.argv[1])
     solution = gsat(formula, n_vars)
     print 's SATISFIABLE'
     print 'v ' + ' '.join([str(x) for x in solution]) + ' 0'
