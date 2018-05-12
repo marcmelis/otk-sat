@@ -9,7 +9,6 @@
 
 import sys
 import random
-from copy import deepcopy
 
 
 def parse(filename):
@@ -32,19 +31,28 @@ def random_variable_selection(n_vars):
 def max_sat_clauses(formula, assignment, max_satisfied):
     max_sat = max_satisfied
     li = random.randint(0, len(assignment) - 1)  # Random Walk
+    print "Formula: ", formula
+    print "Assignment: ", assignment
+    print "Max satisfied: ", max_satisfied
     for i in range(0, len(assignment)):
+        print "Assignment", i
         sat = 0
-        choice = deepcopy(assignment)
+        choice = assignment[:]
         index = abs(choice[i]) - 1
         choice[index] = -choice[index]
+        print "New choice: ", choice
         for clause in formula:
             for lit in clause:
                 if lit in choice:
                     sat = sat + 1
                     break
-        if sat > max_satisfied:
+        print "Sat clauses: ", sat
+        if sat > max_sat:
+            print "New best solution!"
             li = i
             max_sat = sat
+        print "\n"
+    print "Variable selected: ", li
     return max_sat, li
 
 
