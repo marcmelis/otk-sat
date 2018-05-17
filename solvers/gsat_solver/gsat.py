@@ -11,6 +11,7 @@ import random
 import sys
 from itertools import repeat
 
+
 def parse(filename):
     clauses = []
     for line in open(filename):
@@ -123,6 +124,9 @@ def lit_clause_struct(formula, n_vars):
 def main():
     formula, n_vars, n_clauses = parse(sys.argv[1])
     pos_list, neg_list = lit_clause_struct(formula, n_vars)
+    print "Formula: ", formula
+    print "Pos: ", pos_list
+    print "Neg: ", neg_list
     solution = gsat(formula, n_vars)
     print 's SATISFIABLE'
     print 'v ' + ' '.join([str(x) for x in solution]) + ' 0'
