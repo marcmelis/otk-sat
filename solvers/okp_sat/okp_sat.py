@@ -49,19 +49,19 @@ def compute_broken(clause, true_sat_lit, lit_in_clauses, interpretation, omega=0
     best_literals = []
     for literal in clause:
 
-        broken_score = 0
+        break_score = 0
 
         if interpretation[abs(literal)] < 0:
             for clause_index in lit_in_clauses[-abs(literal)]:
                 if true_sat_lit[clause_index] == 1:
-                    broken_score += 1
+                    break_score += 1
         else:
             for clause_index in lit_in_clauses[abs(literal)]:
                 if true_sat_lit[clause_index] == 1:
-                    broken_score += 1
+                    break_score += 1
 
-        if broken_score < break_min:
-            break_min = broken_score
+        if break_score < break_min:
+            break_min = break_score
             best_literals = [literal]
 
     if break_min != 0 and random.random() < omega:
