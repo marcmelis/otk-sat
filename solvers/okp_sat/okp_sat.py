@@ -63,9 +63,11 @@ def compute_broken(clause, true_sat_lit, lit_in_clauses, interpretation, omega=0
         if break_score < break_min:
             break_min = break_score
             best_literals = [literal]
+        elif break_score == break_min:
+            best_literals.append(literal)
 
     if break_min != 0 and random.random() < omega:
-        best_literals = [random.choice(clause)]
+        best_literals = clause
 
     return random.choice(best_literals)
 
