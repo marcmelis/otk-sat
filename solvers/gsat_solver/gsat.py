@@ -7,9 +7,9 @@
 
 """
 
-import sys
 import random
-
+import sys
+from itertools import repeat
 
 def parse(filename):
     clauses = []
@@ -28,34 +28,6 @@ def random_variable_selection(n_vars):
     return random.randint(0, n_vars - 1)
 
 
-def max_sat_clauses(formula, assignment, max_satisfied):
-    max_sat = max_satisfied
-    li = random.randint(0, len(assignment) - 1)  # Random Walk
-    print "Formula: ", formula
-    print "Assignment: ", assignment
-    print "Max satisfied: ", max_satisfied
-    for i in range(0, len(assignment)):
-        print "Assignment", i
-        sat = 0
-        choice = assignment[:]
-        index = abs(choice[i]) - 1
-        choice[index] = -choice[index]
-        print "New choice: ", choice
-        for clause in formula:
-            for lit in clause:
-                if lit in choice:
-                    sat = sat + 1
-                    break
-        print "Sat clauses: ", sat
-        if sat > max_sat:
-            print "New best solution!"
-            li = i
-            max_sat = sat
-        print "\n"
-    print "Variable selected: ", li
-    return max_sat, li
-
-
 def get_counter(formula):
     counter = {}
     for clause in formula:
@@ -69,8 +41,7 @@ def get_counter(formula):
 
 def check_solution(solution, formula):
     for clause in formula:
-        solution = map(int, solution)
-        sl = map(int, clause)
+        sl = clause
         length = len(sl)
         for lit in sl:
             if lit == solution[abs(lit) - 1]:
@@ -83,17 +54,42 @@ def check_solution(solution, formula):
 
 
 def gsat(formula, n_vars):
-    max_flips = n_vars * n_vars
-    max_tries = 10
+    max_flips = n_vars
     while True:
         assignment = initial_configuration(n_vars)
         max_sat = 0
-        for tries in range(1, max_tries):
-            for flips in range(1, max_flips):
-                if check_solution(assignment, formula):
-                    return assignment
-                max_sat, x = max_sat_clauses(formula, assignment, max_sat)
-                assignment[x] = -assignment[x]
+        for flips in xrange(max_flips):
+            if check_solution(assignment, formula):
+                return assignment
+            max_sat, x = max_sat_clauses(formula, assignment, max_sat)
+            assignment[x] = -assignment[x]
+
+
+def max_sat_clauses(formula, assignment, max_satisfied):
+    max_sat = max_satisfied
+    li = random.randint(0, len(assignment) - 1)  # Random Walk
+    for i in range(0, len(assignment)):
+        sat = 0
+        choice = assignment[:]
+        index = abs(choice[i]) - 1
+        choice[index] = -choice[index]
+        for clause in formula:
+            if is_satisfied_clause(clause, choice):
+                sat = sat + 1
+                break
+        if sat > max_sat:
+            li = i
+            max_sat = sat
+            if max_sat == len(formula):
+                break
+    return max_sat, li
+
+
+def is_satisfied_clause(clause, choice):
+    for lit in clause:
+        if lit in choice:
+            return True
+    return False
 
 
 def initial_configuration(n_vars):
@@ -107,8 +103,26 @@ def initial_configuration(n_vars):
     return init_conf
 
 
+def lit_clause_struct(formula, n_vars):
+    pos = [[] for i in repeat(None, n_vars + 1)]
+    neg = [[] for i in repeat(None, n_vars + 1)]
+    index_c = 1
+    for clause in formula:
+        index_l = 1
+        for literal in clause:
+            i = abs(literal)
+            if literal > 0:
+                pos[i].append(index_c)
+            elif literal < 0:
+                neg[i].append(index_c)
+            index_l = index_l + 1
+        index_c = index_c + 1
+    return pos, neg
+
+
 def main():
     formula, n_vars, n_clauses = parse(sys.argv[1])
+    pos_list, neg_list = lit_clause_struct(formula, n_vars)
     solution = gsat(formula, n_vars)
     print 's SATISFIABLE'
     print 'v ' + ' '.join([str(x) for x in solution]) + ' 0'
