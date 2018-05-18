@@ -18,12 +18,14 @@
 
 # Libraries
 
-import sys
+import os
 import random
-import networkx
-import pygraphviz
+import sys
 
-# Classes 
+import networkx
+
+
+# Classes
 
 class CNF():
     """A CNF formula randomly generated"""
@@ -39,6 +41,7 @@ class CNF():
         self.num_nodes = num_nodes
         self.edge_prob = edge_prob
         self.num_colors = num_colors
+        self.color_codes = self.gen_colors(num_colors)
         self.clauses = []
         self.graph = networkx.Graph()
         self.gen_node_clauses()
@@ -48,6 +51,33 @@ class CNF():
         self.a_graph.node_attr['width'] = '0.4'
         self.a_graph.node_attr['height'] = '0.4'
         self.a_graph.edge_attr['color'] = '#000000'
+
+    def gen_colors(self, num_colors):
+        hex_dict = {
+            0: "0",
+            1: "1",
+            2: "2",
+            3: "3",
+            4: "4",
+            5: "5",
+            6: "6",
+            7: "7",
+            8: "8",
+            9: "9",
+            10: "A",
+            11: "B",
+            12: "C",
+            13: "D",
+            14: "E",
+            15: "F"
+        }
+        colors = []
+        for _ in xrange(num_colors):
+            color = "#"
+            for _ in xrange(6):
+                color += hex_dict[random.randint(0, 15)]
+            colors.append(color)
+        return colors
 
     def gen_node_clauses(self):
         '''Generate the ALO + AMO clauses for all the nodes'''
@@ -67,7 +97,7 @@ class CNF():
         for n1 in xrange(self.num_nodes - 1):
             for n2 in xrange(n1 + 1, self.num_nodes):
                 if random.random() < self.edge_prob:
-                    self.graph.add_edge(n1,n2)
+                    self.graph.add_edge(n1, n2)
                     var1 = n1 * self.num_colors + 1
                     var2 = n2 * self.num_colors + 1
                     for c in xrange(self.num_colors):
@@ -83,13 +113,13 @@ class CNF():
 
 # Main
 
-if __name__ == '__main__' :
+if __name__ == '__main__':
     """A random CNF generator"""
 
     # Check parameters
     if len(sys.argv) < 4 or len(sys.argv) > 5:
         sys.exit("Use: %s <num-nodes> <edge-prob> <num-colors> [<random-seed>]" % sys.argv[0])
-    
+
     try:
         num_nodes = int(sys.argv[1])
     except:
@@ -125,8 +155,32 @@ if __name__ == '__main__' :
     cnf_formula = CNF(num_nodes, edge_prob, num_colors)
     # WIP
 
+    stdout_reference = sys.stdout
+    sys.stdout = open("input.cnf", "w")
+    cnf_formula.show()
+    sys.stdout = stdout_reference
 
-    # Resolve formula using our solver
+    input_file = "input.cnf"
+    output_file = "output.cnf"
+    solver = os.path.abspath("otk_sat.py")
+    os.system("(python %s %s) > %s 2>&1" % (solver, input_file, output_file))
 
-    # Parse the results and paint the nodes
-    # a_graph.get_node(<num_node>).attr['fillcolor'] = '<color_hex_code>'
+    for line in open("output.cnf", "r"):
+        if line.startswith("v"):
+            nodes = map(int, line.split()[1:-1])
+            for node_index in xrange(num_nodes):
+                for color_index in xrange(num_colors):
+                    if nodes[color_index + node_index * num_colors] > 0:
+                        color = (nodes[color_index + node_index * num_colors] % num_colors)
+                        if color == 0:
+                            cnf_formula.a_graph.get_node(node_index).attr['fillcolor'] = \
+                            cnf_formula.color_codes[num_colors - 1]
+                        else:
+                            cnf_formula.a_graph.get_node(node_index).attr['fillcolor'] = \
+                            cnf_formula.color_codes[color - 1]
+                            # Resolve formula using our solver
+
+                            # Parse the results and paint the nodes
+                            # a_graph.get_node(<num_node>).attr['fillcolor'] = '<color_hex_code>'
+    cnf_formula.a_graph.layout()
+    cnf_formula.a_graph.draw("out.png", format='png')
