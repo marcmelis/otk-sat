@@ -70,24 +70,45 @@ def compute_broken(clause, true_sat_lit, lit_in_clauses, interpretation, omega=0
     return random.choice(best_literals)
 
 
-def run_sat(clauses, n_vars, lit_clause, max_flips_proportion=4):
+def most_often_broken_clauses_heuristic(lit_clause, unsatisfied_clause):
+        aux = []
+        lit = 0
+        max_len = 1
+        print "\n"
+        print "Unsat clause: ", unsatisfied_clause
+        for literal in unsatisfied_clause:
+            length = len(lit_clause[literal])
+            if length >= max_len:
+                max_len = length
+                lit = literal
+            aux.append(lit_clause[literal])
+        print "max_len: ", max_len, " -  literal: ", lit
+        print "aux: ", aux
+        print "\n"
+        return lit
+
+
+def run_sat(clauses, n_vars, lit_clause, max_flips_proportion=3):
     max_flips = n_vars * max_flips_proportion
-
+    print "Len: ", n_vars
+    print "Len:1 ", len(lit_clause)
+    print "Lit clause: ", lit_clause
+    print "Max len sublist: ", max(lit_clause, key=len)
     while 1:
-
         interpretation = get_random_interpretation(n_vars)
         true_sat_lit = get_true_sat_lit(clauses, interpretation)
 
         for _ in xrange(max_flips):
-
             unsatisfied_clauses_index = [index for index, true_lit in enumerate(true_sat_lit) if not true_lit]
 
             if not unsatisfied_clauses_index:
                 return interpretation
 
             clause_index = random.choice(unsatisfied_clauses_index)
+
             unsatisfied_clause = clauses[clause_index]
 
+            # lit_to_flip = most_often_broken_clauses_heuristic(lit_clause, unsatisfied_clause)
             lit_to_flip = compute_broken(unsatisfied_clause, true_sat_lit, lit_clause, interpretation)
 
             update_tsl(lit_to_flip, true_sat_lit, lit_clause)
