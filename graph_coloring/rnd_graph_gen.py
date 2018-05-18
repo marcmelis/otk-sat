@@ -110,7 +110,15 @@ class CNF():
         for c in self.clauses:
             sys.stdout.write("%s 0\n" % " ".join(map(str, c)))
 
-
+    def paint_nodes(self, nodes):
+        for node_index in xrange(self.num_nodes):
+            for color_index in xrange(self.num_colors):
+                if nodes[color_index + node_index * num_colors] > 0:
+                    color = ((nodes[color_index + node_index * self.num_colors] + 1) % self.num_colors)
+                    self.a_graph.get_node(node_index).attr['fillcolor'] = self.color_codes[color]
+    def draw_graph(self):
+        self.a_graph.layout()
+        self.a_graph.draw("out.png", format='png')
 # Main
 
 if __name__ == '__main__':
@@ -153,7 +161,6 @@ if __name__ == '__main__':
     random.seed(seed)
     # Create a CNF instance
     cnf_formula = CNF(num_nodes, edge_prob, num_colors)
-    # WIP
 
     stdout_reference = sys.stdout
     sys.stdout = open("input.cnf", "w")
@@ -168,19 +175,5 @@ if __name__ == '__main__':
     for line in open("output.cnf", "r"):
         if line.startswith("v"):
             nodes = map(int, line.split()[1:-1])
-            for node_index in xrange(num_nodes):
-                for color_index in xrange(num_colors):
-                    if nodes[color_index + node_index * num_colors] > 0:
-                        color = (nodes[color_index + node_index * num_colors] % num_colors)
-                        if color == 0:
-                            cnf_formula.a_graph.get_node(node_index).attr['fillcolor'] = \
-                            cnf_formula.color_codes[num_colors - 1]
-                        else:
-                            cnf_formula.a_graph.get_node(node_index).attr['fillcolor'] = \
-                            cnf_formula.color_codes[color - 1]
-                            # Resolve formula using our solver
-
-                            # Parse the results and paint the nodes
-                            # a_graph.get_node(<num_node>).attr['fillcolor'] = '<color_hex_code>'
-    cnf_formula.a_graph.layout()
-    cnf_formula.a_graph.draw("out.png", format='png')
+            cnf_formula.paint_nodes(nodes)
+            cnf_formula.draw_graph()
