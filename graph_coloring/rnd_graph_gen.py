@@ -114,11 +114,15 @@ class CNF():
         for node_index in xrange(self.num_nodes):
             for color_index in xrange(self.num_colors):
                 if nodes[color_index + node_index * num_colors] > 0:
-                    color = ((nodes[color_index + node_index * self.num_colors] + 1) % self.num_colors)
+                    color = (
+                    (nodes[color_index + node_index * self.num_colors] + 1) % self.num_colors)
                     self.a_graph.get_node(node_index).attr['fillcolor'] = self.color_codes[color]
+
     def draw_graph(self):
         self.a_graph.layout()
         self.a_graph.draw("out.png", format='png')
+
+
 # Main
 
 if __name__ == '__main__':
@@ -169,7 +173,7 @@ if __name__ == '__main__':
 
     input_file = "input.cnf"
     output_file = "output.cnf"
-    solver = os.path.abspath("otk_sat.py")
+    solver = os.path.abspath("local_solver.py")
     os.system("(python %s %s) > %s 2>&1" % (solver, input_file, output_file))
 
     for line in open("output.cnf", "r"):
