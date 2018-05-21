@@ -51,14 +51,9 @@ def compute_broken(clause, true_sat_lit, lit_in_clauses, interpretation, omega=0
 
         break_score = 0
 
-        if interpretation[abs(literal)] < 0:
-            for clause_index in lit_in_clauses[-abs(literal)]:
-                if true_sat_lit[clause_index] == 1:
-                    break_score += 1
-        else:
-            for clause_index in lit_in_clauses[abs(literal)]:
-                if true_sat_lit[clause_index] == 1:
-                    break_score += 1
+        for clause_index in lit_in_clauses[-literal]:
+            if true_sat_lit[clause_index] == 1:
+                break_score += 1
 
         if break_score < break_min:
             break_min = break_score
