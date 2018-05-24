@@ -44,14 +44,14 @@ def update_tsl(literal_to_flip, true_sat_lit, lit_clause):
         true_sat_lit[clause_index] -= 1
 
 
-def compute_broken(clause, true_sat_lit, lit_in_clauses, omega=0.4):
+def compute_broken(clause, true_sat_lit, lit_clause, omega=0.4):
     break_min = sys.maxint
     best_literals = []
     for literal in clause:
 
         break_score = 0
 
-        for clause_index in lit_in_clauses[-literal]:
+        for clause_index in lit_clause[-literal]:
             if true_sat_lit[clause_index] == 1:
                 break_score += 1
 
@@ -69,12 +69,9 @@ def compute_broken(clause, true_sat_lit, lit_in_clauses, omega=0.4):
 
 def run_sat(clauses, n_vars, lit_clause, max_flips_proportion=4):
     max_flips = n_vars * max_flips_proportion
-
     while 1:
-
         interpretation = get_random_interpretation(n_vars)
         true_sat_lit = get_true_sat_lit(clauses, interpretation)
-
         for _ in xrange(max_flips):
 
             unsatisfied_clauses_index = [index for index, true_lit in enumerate(true_sat_lit) if
