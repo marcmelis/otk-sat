@@ -16,7 +16,7 @@ $ python src/otk_sat.py <formula_to_solve>
 
 ## Formula generator
 
-CNF formula generator, [DIMACS format].
+CNF formula generator.
 
 ```
 $ python src/rnd_cnf_gen.py <num_vars> <num_clauses> <clauses_length> [<seed>] [ > file ]
@@ -49,7 +49,7 @@ $ python src/rnd_graph_gen.py 10 0.3 5 src/otk_sat.py [<random-seed>]
 Validator for SATISFIABLE formulas.
 
 ```
-$ python utils/sat_val.py <formula> <solution>
+$ python src/sat_val.py <formula> <solution>
 ```
 
 ## References: 
