@@ -1,6 +1,6 @@
 # WalkSAT practice
 
-You can find a copy of this repository at https://github.com/markankaro/walksat_practice.
+You can find a copy of this repository at https://github.com/markankaro/otk-sat.
 
 All the formulas are in [DIMACS format].
 
