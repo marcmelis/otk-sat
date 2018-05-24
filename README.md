@@ -27,7 +27,7 @@ $ python src/rnd_cnf_gen.py <num_vars> <num_clauses> <clauses_length> [<seed>] [
 Graph coloring problem generator. 
 
 ```
-$ python src/rnd_graph_gen.py <num-nodes> <edge-prob> <num-colors> <solver_name> [<random-seed>]
+$ python src/rnd_graph_gen.py <num-nodes> <edge-prob> <num-colors> <solver-name> [<random-seed>]
 ```
 
 Output image saved as `out.png`. Original CNF saved as `input.cnf` and satisfiabilty of this CNF saved as `output.cnf`.
@@ -36,9 +36,6 @@ Output image saved as `out.png`. Original CNF saved as `input.cnf` and satisfiab
 
 - networkx library
 
-```
-$ pip install networkx
-```
 
 ### Example of usage
 
