@@ -1,4 +1,4 @@
-# LocalSearchSat
+# WalkSAT practice
 
 You can find a copy of this repository at https://github.com/markankaro/walksat_practice.
 
