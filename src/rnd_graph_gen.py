@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #######################################################################
-# Copyright 2013 Josep Argelich
+# Copyright 2013 Josep Argelich & Marc Melis
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ class CNF():
         return colors
 
     def gen_node_clauses(self):
-        '''Generate the ALO + AMO clauses for all the nodes'''
+        """Generate the ALO + AMO clauses for all the nodes"""
         for n in xrange(self.num_nodes):
             # Add node to the graph
             self.graph.add_node(n)
@@ -93,7 +93,7 @@ class CNF():
                     self.clauses.append([-v1, -v2])
 
     def gen_edge_clauses(self):
-        '''Generates the clauses for each pair of nodes that have an edge with certain prob'''
+        """Generates the clauses for each pair of nodes that have an edge with certain prob"""
         for n1 in xrange(self.num_nodes - 1):
             for n2 in xrange(n1 + 1, self.num_nodes):
                 if random.random() < self.edge_prob:
@@ -111,6 +111,7 @@ class CNF():
             sys.stdout.write("%s 0\n" % " ".join(map(str, c)))
 
     def paint_nodes(self, nodes):
+        """Paints each node with a random color"""
         for node_index in xrange(self.num_nodes):
             for color_index in xrange(self.num_colors):
                 if nodes[color_index + node_index * num_colors] > 0:
@@ -119,6 +120,7 @@ class CNF():
                     self.a_graph.get_node(node_index).attr['fillcolor'] = self.color_codes[color]
 
     def draw_graph(self):
+        """Prints the graph as out.png"""
         self.a_graph.layout()
         self.a_graph.draw("out.png", format='png')
 
@@ -129,8 +131,8 @@ if __name__ == '__main__':
     """A random CNF generator"""
 
     # Check parameters
-    if len(sys.argv) < 4 or len(sys.argv) > 5:
-        sys.exit("Use: %s <num-nodes> <edge-prob> <num-colors> [<random-seed>]" % sys.argv[0])
+    if len(sys.argv) < 5 or len(sys.argv) > 6:
+        sys.exit("Use: %s <num-nodes> <edge-prob> <num-colors> <solver-name> [<random-seed>]" % sys.argv[0])
 
     try:
         num_nodes = int(sys.argv[1])
@@ -153,31 +155,38 @@ if __name__ == '__main__':
     if (num_colors < 1):
         sys.exit("ERROR: Number of colors must be >= 1 (%d)." % num_colors)
 
-    if len(sys.argv) > 4:
+    try:
+        solver_name = str(sys.argv[4])
+    except:
+        sys.exit("ERROR: Solver name not valid string (%s)." % sys.argv[4])
+    if not os.path.exists(solver_name):
+        sys.exit("ERROR: Solver (%s) not exists." % solver_name)
+
+    if len(sys.argv) > 5:
         try:
-            seed = int(sys.argv[4])
+            seed = int(sys.argv[5])
         except:
-            sys.exit("ERROR: Seed number not an integer (%s)." % sys.argv[4])
+            sys.exit("ERROR: Seed number not an integer (%s)." % sys.argv[5])
     else:
         seed = None
 
-    # Initialize random seed (current time)
     random.seed(seed)
-    # Create a CNF instance
     cnf_formula = CNF(num_nodes, edge_prob, num_colors)
-
-    stdout_reference = sys.stdout
-    sys.stdout = open("input.cnf", "w")
-    cnf_formula.show()
-    sys.stdout = stdout_reference
 
     input_file = "input.cnf"
     output_file = "output.cnf"
-    solver = os.path.abspath("local_solver.py")
+
+    stdout_reference = sys.stdout
+    sys.stdout = open(input_file, "w")
+    cnf_formula.show()
+    sys.stdout = stdout_reference
+
+    solver = os.path.abspath(solver_name)
     os.system("(python %s %s) > %s 2>&1" % (solver, input_file, output_file))
 
-    for line in open("output.cnf", "r"):
+    for line in open(output_file, "r"):
         if line.startswith("v"):
             nodes = map(int, line.split()[1:-1])
             cnf_formula.paint_nodes(nodes)
             cnf_formula.draw_graph()
+            print 'Image saved as out.png'

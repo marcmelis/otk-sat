@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #######################################################################
-# Copyright 2013 Josep Argelich
+# Copyright 2013 Josep Argelich & Marc Melis
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
