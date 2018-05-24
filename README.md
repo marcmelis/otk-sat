@@ -54,6 +54,6 @@ Validator for SATISFIABLE formulas.
 $ python src/sat_val.py <formula> <solution>
 ```
 
-## References: 
+## References
 * Shaowei Cai, Faster Implementation for WalkSAT (2013). http://lcs.ios.ac.cn/~caisw/Paper/Faster_WalkSAT.pdf
 
