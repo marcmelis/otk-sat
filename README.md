@@ -44,6 +44,8 @@ $ python src/rnd_graph_gen.py 10 0.3 5 src/otk_sat.py [<random-seed>]
 ```
 \**The script will not finish if the formula of the graph generated is unsatisfiable if you use a local search solver*
 
+![alt text](https://github.com/markankaro/walksat_practice/blob/master/example/out.png?raw=true "examples/out.png")
+
 ## Solution validator
 
 Validator for SATISFIABLE formulas.
