@@ -2,7 +2,7 @@
 
 You can find a copy of this repository at https://github.com/markankaro/walksat_practice.
 
-All the formulas are in [DIMACS_format].
+All the formulas are in [DIMACS format].
 
 [DIMACS format]: http://www.satcompetition.org/2004/format-solvers2004.html
 
